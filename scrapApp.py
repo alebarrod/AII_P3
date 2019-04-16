@@ -11,7 +11,8 @@ class objectDB():
         self.pais = pais
         self.fechaEstreno = fechaEstreno
         self.director = director
-        self.generos = generos
+        self.generos = str(generos)
+        
     def toString(self):
         return 'Titulo: ' + self.titulo + '. Titulo original: ' + self.tituloOriginal + ' (' + self.pais + '). Fecha de estreno: ' + self.fechaEstreno + '. Dirigida por: ' + self.director + '. Generos: ' + str(self.generos) + '.'
         
@@ -39,9 +40,7 @@ class DB:
             connection = sqlite3.connect(self.name)
 
             template = """INSERT INTO PELICULA (TITULO, TITULOORIGINAL, PAIS, FECHAESTRENO, DIRECTOR, GENEROS) VALUES ("{titulo}","{tituloOriginal}","{pais}","{fechaEstreno}","{director}","{generos}");"""
-            conversion = ",".join(map(str,generos))
-            print(conversion)
-            formatted_string = template.format(titulo = titulo, tituloOriginal = tituloOriginal, pais = pais, fechaEstreno = fechaEstreno, director = director, generos = conversion)
+            formatted_string = template.format(titulo = titulo, tituloOriginal = tituloOriginal, pais = pais, fechaEstreno = fechaEstreno, director = director, generos = generos)
             print("SQL: " + formatted_string)
             connection.execute(formatted_string)
             connection.commit()
@@ -70,6 +69,56 @@ class DB:
             connection.close()
             return lista    
 
+class App:
+    def __init__(self):
+        #Creacion de base de datos
+        self.dbconnection = DB("practica3.db")
+
+        #Creación de aplicación de escritorio
+        self.app = tkinter.Tk()
+
+        #Creación del menú
+        self.menu = tkinter.Menu(self.app)
+
+        #Desplegable de Datos
+        self.datomenu = tkinter.Menu(self.menu, tearoff = 0)
+        self.datomenu.add_command(label = "Cargar", command = self.cargar)
+        self.datomenu.add_separator()
+        self.datomenu.add_command(label = "Salir", command = self.app.destroy)
+
+        self.menu.add_cascade(label = "Datos", menu = self.datomenu)
+
+        #Desplegable de Buscar
+        self.buscamenu = tkinter.Menu(self.menu, tearoff = 0)
+        self.buscamenu.add_command(label = "Titulo", command = self.titulo)
+        self.buscamenu.add_command(label = "Fecha", command = self.fecha)
+
+        self.menu.add_cascade(label = "Buscar", menu = self.buscamenu)
+
+        #Desplegable de Estadísticas
+        self.estadisticamenu = tkinter.Menu(self.menu, tearoff = 0)
+        self.estadisticamenu.add_command(label = "Peliculas por genero", command = self.peliculasGenero)
+
+        self.menu.add_cascade(label = "Peliculas por genero", menu = self.estadisticamenu)
+
+        #Lanzamiento del menu
+        self.app.config(menu = self.menu)
+        self.app.mainloop()
+    
+    def cargar(self):
+        lista = scrap() #Hacer scrap y devolver una lista con los objetos para la base de datos
+        for element in lista:
+            #almacenar objetos
+            self.dbconnection.insert(element.titulo, element.tituloOriginal, element.pais, element.fechaEstreno, element.director, element.generos)
+
+    def titulo(self):
+        pass
+
+    def fecha(self):
+        pass
+    
+    def peliculasGenero(self):
+        pass
 
 def scrap():
     listaRes = list()
@@ -121,7 +170,7 @@ def scrap():
 
             objeto = objectDB(titulo, tituloOriginal, pais, fechaEstreno, director, generos)
             listaRes.append(objeto)
-            
+
         except Exception:
             print("Error en la extraccion!")
 
@@ -130,10 +179,7 @@ def scrap():
     return listaRes
 
 def main():
-    lista = scrap()
-
-    for elemento in lista:
-        print(elemento.toString())
+    App()
 
 if __name__ == "__main__":
     main()
