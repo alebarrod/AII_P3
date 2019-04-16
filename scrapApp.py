@@ -112,7 +112,26 @@ class App:
             self.dbconnection.insert(element.titulo, element.tituloOriginal, element.pais, element.fechaEstreno, element.director, element.generos)
 
     def titulo(self):
-        pass
+        #Create new window
+        self.temaWindow = tkinter.Tk()
+
+        #Create label
+        self.tituloLabel = tkinter.Label(self.temaWindow, text="Introduzca el título: ")
+        self.tituloLabel.grid(row = 0, column = 0)
+
+        #Create input entry
+        self.tituloEntry = tkinter.Entry(self.temaWindow)
+        self.tituloEntry.grid(row = 1, column = 0)
+
+        #Create button asociated to getTema
+        b = tkinter.Button(self.temaWindow, text = "Buscar", command = lambda: self.getTitulo(self.tituloEntry.get()))
+        b.grid(row = 1, column = 1)
+
+        #Run loop
+        self.temaWindow.mainloop()
+
+    def getTitulo(self, titulo):
+        print(titulo)
 
     def fecha(self):
         pass
