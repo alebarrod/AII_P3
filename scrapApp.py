@@ -69,3 +69,71 @@ class DB:
                   lista.append(objectDB(obj[1],obj[2],obj[3],obj[4],obj[5],obj[6].split(",")))
             connection.close()
             return lista    
+
+
+def scrap():
+    listaRes = list()
+
+    #descargar web como 'main.html'
+    urllib.request.urlretrieve('https://www.elseptimoarte.net/estrenos/','main.html')
+    html_doc = open('main.html','r')
+    #Abrimos usando el parser 'html.parser'
+    soup = BeautifulSoup(html_doc, 'html.parser')
+
+    small_soup = soup.find('section', id = "collections")
+    small_soup = small_soup.find('ul', class_ = "elements")
+
+    for article in small_soup.find_all('li'):
+        try:
+            pais = ""
+            link = 'https://www.elseptimoarte.net' + article.find('a')['href']
+            
+            urllib.request.urlretrieve(link,'temp.html')
+            temp_html = open('temp.html','r')
+            soup2 = BeautifulSoup(temp_html, 'html.parser')
+            small_soup2 = soup2.find('section', class_ = 'highlight')
+
+            for film in small_soup2.find_all('dt'):
+                if film.string == "Título":  
+                    titulo = film.find_next().string        
+                    #print(titulo)
+                
+                if film.string == "Título original":
+                    tituloOriginal = film.find_next().string        
+                    #print(tituloOriginal)
+                
+                if film.string == "País":
+                    for a in film.find_next().find_all('a'):
+                        pais = pais + " " + a.string        
+                    #print(pais)
+                
+                if film.string == "Estreno en España":
+                    fechaEstreno = film.find_next().string        
+                    #print(fechaEstreno)
+                
+                if film.string == "Director":
+                    director = film.find_next().a.string    
+                    #print(director)
+                
+
+            generos = article.find('p', class_ = 'generos').string
+            #print(generos)
+
+            objeto = objectDB(titulo, tituloOriginal, pais, fechaEstreno, director, generos)
+            listaRes.append(objeto)
+            
+        except Exception:
+            print("Error en la extraccion!")
+
+        
+
+    return listaRes
+
+def main():
+    lista = scrap()
+
+    for elemento in lista:
+        print(elemento.toString())
+
+if __name__ == "__main__":
+    main()
