@@ -178,8 +178,29 @@ class App:
     
     def peliculasGenero(self):
         conjunto = self.dbconnection.selectGeneros()
-        for element in conjunto:
-            print(element)
+        
+        ventanaGeneros = tkinter.Tk()
+
+        w = tkinter.Spinbox(ventanaGeneros, values = tuple(conjunto))
+        w.grid(row = 0, column = 0)
+        tkinter.Button(ventanaGeneros, text = "Buscar", command = lambda:self.peliculaPorGenero(w.get())).grid(row = 0, column = 1)
+
+        ventanaGeneros.mainloop()
+        
+    def peliculaPorGenero(self, genero):
+        ventana = tkinter.Tk()
+
+        Listbox = tkinter.Listbox(ventana, width = 150, heigh = 30)
+        res = self.dbconnection.selectByGenero(genero)
+
+        for i,item in enumerate(res):
+            Listbox.insert(i, item.toString())
+        
+        Listbox.pack()
+
+        ventana.mainloop()
+
+
 
 def scrap():
     listaRes = list()
