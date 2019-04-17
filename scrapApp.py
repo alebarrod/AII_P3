@@ -74,12 +74,13 @@ class DB:
             connection = sqlite3.connect(self.name)
             template = """SELECT GENEROS FROM PELICULA;"""
             
-            res = connection.execute(formatted_string)
+            res = connection.execute(template)
             for obj in res:
-                  for elemento in obj.split(','):
-                      conjunto.append(elemento)
+                itera = obj[0].replace(' ','')
+                for elemento in itera.split(','):
+                      conjunto.add(elemento)
             connection.close()
-            return lista 
+            return conjunto 
     
     def selectByGenero(self, genero):
             lista = list()
