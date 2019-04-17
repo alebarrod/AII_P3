@@ -57,6 +57,18 @@ class DB:
             connection.close()
             return lista        
     
+    def selectByTitulo(self, titulo):
+            lista = list()
+            connection = sqlite3.connect(self.name)
+            template = """SELECT * FROM PELICULA WHERE TITULO LIKE "%{titulo}%";"""
+            formatted_string = template.format(titulo = titulo)
+            res = connection.execute(formatted_string)
+            for obj in res:
+                  print(obj)
+                  lista.append(objectDB(obj[1],obj[2],obj[3],obj[4],obj[5],obj[6].split(",")))
+            connection.close()
+            return lista  
+
     def selectByGenero(self, genero):
             lista = list()
             connection = sqlite3.connect(self.name)
@@ -131,7 +143,22 @@ class App:
         self.temaWindow.mainloop()
 
     def getTitulo(self, titulo):
-        print(titulo)
+        #Create new window
+        self.getTituloWindow = tkinter.Tk()
+
+        #Create list box
+        ListboxTema = tkinter.Listbox(self.getTituloWindow, width = 200, height = 40)
+
+        #Extraemos los temas relacionados con la cadena recibida y formateamos los resultados
+        lista = self.dbconnection.selectByTitulo(titulo)
+        i = 1
+        for element in lista:
+            ListboxTema.insert(i, f'{element.titulo}    Por: {element.director} ({element.pais})')
+            i = i + 1
+
+        ListboxTema.pack()
+
+        self.getTituloWindow.mainloop()
 
     def fecha(self):
         pass
