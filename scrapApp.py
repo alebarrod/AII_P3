@@ -69,6 +69,18 @@ class DB:
             connection.close()
             return lista  
 
+    def selectGeneros(self):
+            conjunto = set()
+            connection = sqlite3.connect(self.name)
+            template = """SELECT GENEROS FROM PELICULA;"""
+            
+            res = connection.execute(formatted_string)
+            for obj in res:
+                  for elemento in obj.split(','):
+                      conjunto.append(elemento)
+            connection.close()
+            return lista 
+    
     def selectByGenero(self, genero):
             lista = list()
             connection = sqlite3.connect(self.name)
@@ -164,7 +176,9 @@ class App:
         pass
     
     def peliculasGenero(self):
-        pass
+        conjunto = self.dbconnection.selectGeneros()
+        for element in conjunto:
+            print(element)
 
 def scrap():
     listaRes = list()
